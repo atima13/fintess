@@ -35,6 +35,12 @@ const normalizeResponse = (payload) => {
 }
 
 function Leaderboard({ apiBaseUrl }) {
+  const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+  const resolvedApiBaseUrl =
+    apiBaseUrl ||
+    (codespaceName
+      ? `https://${codespaceName}-8000.app.github.dev/api`
+      : '/api')
   const [entries, setEntries] = useState([])
   const [meta, setMeta] = useState({ count: 0, page: null, totalPages: null })
   const [loading, setLoading] = useState(true)
@@ -48,7 +54,7 @@ function Leaderboard({ apiBaseUrl }) {
         setLoading(true)
         setError('')
 
-        const response = await fetch(`${apiBaseUrl}/leaderboard/`, {
+        const response = await fetch(`${resolvedApiBaseUrl}/leaderboard/`, {
           signal: abortController.signal,
         })
 
@@ -75,7 +81,7 @@ function Leaderboard({ apiBaseUrl }) {
 
     loadLeaderboard()
     return () => abortController.abort()
-  }, [apiBaseUrl])
+  }, [resolvedApiBaseUrl])
 
   if (loading) {
     return <p>Loading leaderboard...</p>

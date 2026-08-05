@@ -35,6 +35,12 @@ const normalizeResponse = (payload) => {
 }
 
 function Workouts({ apiBaseUrl }) {
+  const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
+  const resolvedApiBaseUrl =
+    apiBaseUrl ||
+    (codespaceName
+      ? `https://${codespaceName}-8000.app.github.dev/api`
+      : '/api')
   const [workouts, setWorkouts] = useState([])
   const [meta, setMeta] = useState({ count: 0, page: null, totalPages: null })
   const [loading, setLoading] = useState(true)
@@ -48,7 +54,7 @@ function Workouts({ apiBaseUrl }) {
         setLoading(true)
         setError('')
 
-        const response = await fetch(`${apiBaseUrl}/workouts/`, {
+        const response = await fetch(`${resolvedApiBaseUrl}/workouts/`, {
           signal: abortController.signal,
         })
 
@@ -75,7 +81,7 @@ function Workouts({ apiBaseUrl }) {
 
     loadWorkouts()
     return () => abortController.abort()
-  }, [apiBaseUrl])
+  }, [resolvedApiBaseUrl])
 
   if (loading) {
     return <p>Loading workouts...</p>
