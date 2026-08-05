@@ -36,11 +36,11 @@ const normalizeResponse = (payload) => {
 
 function Users({ apiBaseUrl }) {
   const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
-  const resolvedApiBaseUrl =
-    apiBaseUrl ||
-    (codespaceName
-      ? `https://${codespaceName}-8000.app.github.dev/api`
-      : '/api')
+  const endpointUrl = apiBaseUrl
+    ? `${apiBaseUrl}/users/`
+    : codespaceName
+      ? `https://${codespaceName}-8000.app.github.dev/api/users/`
+      : '/api/users/'
   const [users, setUsers] = useState([])
   const [meta, setMeta] = useState({ count: 0, page: null, totalPages: null })
   const [loading, setLoading] = useState(true)
@@ -54,7 +54,7 @@ function Users({ apiBaseUrl }) {
         setLoading(true)
         setError('')
 
-        const response = await fetch(`${resolvedApiBaseUrl}/users/`, {
+        const response = await fetch(endpointUrl, {
           signal: abortController.signal,
         })
 
@@ -81,7 +81,7 @@ function Users({ apiBaseUrl }) {
 
     loadUsers()
     return () => abortController.abort()
-  }, [resolvedApiBaseUrl])
+  }, [endpointUrl])
 
   if (loading) {
     return <p>Loading users...</p>

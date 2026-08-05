@@ -36,11 +36,11 @@ const normalizeResponse = (payload) => {
 
 function Teams({ apiBaseUrl }) {
   const codespaceName = import.meta.env.VITE_CODESPACE_NAME?.trim()
-  const resolvedApiBaseUrl =
-    apiBaseUrl ||
-    (codespaceName
-      ? `https://${codespaceName}-8000.app.github.dev/api`
-      : '/api')
+  const endpointUrl = apiBaseUrl
+    ? `${apiBaseUrl}/teams/`
+    : codespaceName
+      ? `https://${codespaceName}-8000.app.github.dev/api/teams/`
+      : '/api/teams/'
   const [teams, setTeams] = useState([])
   const [meta, setMeta] = useState({ count: 0, page: null, totalPages: null })
   const [loading, setLoading] = useState(true)
@@ -54,7 +54,7 @@ function Teams({ apiBaseUrl }) {
         setLoading(true)
         setError('')
 
-        const response = await fetch(`${resolvedApiBaseUrl}/teams/`, {
+        const response = await fetch(endpointUrl, {
           signal: abortController.signal,
         })
 
@@ -81,7 +81,7 @@ function Teams({ apiBaseUrl }) {
 
     loadTeams()
     return () => abortController.abort()
-  }, [resolvedApiBaseUrl])
+  }, [endpointUrl])
 
   if (loading) {
     return <p>Loading teams...</p>
