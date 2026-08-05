@@ -3,7 +3,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 
 import db from './config/database';
-import { getApiBaseUrl } from './config/url';
+import { DEFAULT_API_PORT, getApiBaseUrl } from './config/url';
 import activitiesRouter from './routes/activities';
 import leaderboardRouter from './routes/leaderboard';
 import teamsRouter from './routes/teams';
@@ -13,7 +13,7 @@ import workoutsRouter from './routes/workouts';
 dotenv.config();
 
 const app = express();
-const port = Number(process.env.PORT) || 8000;
+const port = Number(process.env.PORT) || DEFAULT_API_PORT;
 const apiBaseUrl = getApiBaseUrl(port);
 
 app.use(cors());
@@ -24,6 +24,14 @@ app.use('/api/teams', teamsRouter);
 app.use('/api/activities', activitiesRouter);
 app.use('/api/leaderboard', leaderboardRouter);
 app.use('/api/workouts', workoutsRouter);
+
+app.get('/', (_req, res) => {
+  res.status(200).json({
+    message: 'OctoFit API is running',
+    apiBaseUrl,
+    endpoints: ['/api/health', '/api/users', '/api/activities'],
+  });
+});
 
 app.get('/api/health', (_req, res) => {
   const dbState = db.readyState === 1 ? 'connected' : 'disconnected';
