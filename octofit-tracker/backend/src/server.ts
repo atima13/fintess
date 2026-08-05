@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import express from 'express';
 
 import db from './config/database';
-import { DEFAULT_API_PORT, getApiBaseUrl } from './config/url';
 import activitiesRouter from './routes/activities';
 import leaderboardRouter from './routes/leaderboard';
 import teamsRouter from './routes/teams';
@@ -13,8 +12,11 @@ import workoutsRouter from './routes/workouts';
 dotenv.config();
 
 const app = express();
-const port = Number(process.env.PORT) || DEFAULT_API_PORT;
-const apiBaseUrl = getApiBaseUrl(port);
+const port = Number(process.env.PORT) || 8000;
+const codespaceName = process.env.CODESPACE_NAME?.trim();
+const apiBaseUrl = codespaceName
+  ? `https://${codespaceName}-${port}.app.github.dev`
+  : `http://localhost:${port}`;
 
 app.use(cors());
 app.use(express.json());
